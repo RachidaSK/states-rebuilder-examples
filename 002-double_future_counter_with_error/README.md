@@ -1,15 +1,14 @@
 # double_future_counter_with_error
-# future_counter_with_error
 
-This is a counter application that has two counter that share the same model. The first counter increments a counter after waiting 1 second and has a 1/2 probability of generating an error. Whereas the second counter do the same think but after waiting for 3 seconds.
+This is a counter application that has two counter that shares the same model. The first counter increments a counter after waiting for 1 second and has a 1/2 probability of generating an error. Whereas the second counter does the same thing but after waiting for 3 seconds.
 
 If an error is thrown, an alert snackBar will appear giving information about the error.
 
 This example has three pages:
 
-* Page one : The tow counters will share the same reactive environnement. We will see how counter interfere with each other. I call this polluted environnement.
-* Page two: This will show how to make the environnement clean using tags.
-* Page three: It will show how to make the reactive environnement cleaner by creating new reactive environnement for each counter.
+* Page one: The tow counters will share the same reactive environment. We will see how counters interfere with each other. I call this polluted environment.
+* Page two: This will show how to make the environment clean using tags.
+* Page three: It will show how to make the reactive environment cleaner by creating a new reactive environment for each counter.
 
 
 # Model
@@ -40,7 +39,7 @@ class CounterError extends Error {
 
 
 # Service
-The role of the `CounterService` class is to instantiate the counter (usually via the repository) and define the user cases to be used by the user interface.
+The role of the `CounterService` class is to instantiate the counter (usually via the repository) and define the use cases to be used by the user interface.
 
 
 ```dart
@@ -68,7 +67,7 @@ class CounterService {
 ```
 `increment` method takes the second of the waiting as parameter.
 
->This is all the business logic of your app. It is testable , maintainable and framework independent. 
+>This is all the business logic of your app. It is testable, maintainable and framework independent. 
 
 # User Interface
 
@@ -100,7 +99,7 @@ class App extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              //NOTE2 : CounterPage widget for one second of waiting
+              //NOTE2: CounterPage widget for one second of waiting
               CounterPage(
                 counterService: counterService,
                 seconds: 1,
@@ -121,11 +120,11 @@ class App extends StatelessWidget {
 After injecting the `CounterService` class, we get the registered singleton in the builder callback of the `Injector` widget.
 >Injected models are available even within the `Injector` widget where they are injected.
 
-the registered singleton of `CounterService` is obtained using `Injector.getAsReactive` with context, because we want this widget to be notified by the 'counterService' object. [NOTE1]
+the registered singleton of `CounterService` is obtained using `Injector.getAsReactive` with context because we want this widget to be notified by the 'counterService' object. [NOTE1]
 
 >If you want to get the registered reactive singleton and at the same time subscribe it to the obtained instance, you use `Injector.getAsReactive` with context. If the context is not available, you can get the reactive singleton `Injector.getAsReactive` without context and subscribe it to the model using `StateBuilder` widget.
 
-`CounterPage` widget is written so that to be reusable and parametrized. It is use twice; the first for one second of wait ant the other for three seconds of wait. [NOTE2]
+`CounterPage` widget is written so that to be reusable and parametrized. It is used twice; the first for one second of wait ant the other for three seconds of wait. [NOTE2]
 
 ```dart
 class CounterPage extends StatelessWidget {
@@ -176,14 +175,14 @@ class CounterPage extends StatelessWidget {
 
          IconButton(
             onPressed: () {
-              //NOTE2 : To call a method that will mutate the state and notify listeners
+              //NOTE2: To call a method that will mutate the state and notify listeners
               counterService.setState(
                 (state) => state.increment(seconds),
                 //NOTE2 : If increment method throws, it will not break the app.
                 catchError: true,
                 //NOTE2: Side effect to be executed after sending notification and before rebuilding observers
                 onSetState: (BuildContext context) {
-                  //NOTE3: context parameter of the onSetState is the context of the last add observer. In our cas it is the BuildContext of the Injector widget.
+                  //NOTE3: context parameter of the onSetState is the context of the last add observer. In our case, it is the BuildContext of the Injector widget.
                   if (counterService.hasError) {
                     Scaffold.of(context).showSnackBar(
                       SnackBar(
@@ -227,14 +226,14 @@ To Trigger an event that will mutate the state of the `counterService` and end b
 The BuildContext passed to the `onSetState` callback is of the BuildContext of the last added observer.
 
 >states_rebuilder uses the observer pattern, to add observers to observable object, you either:
-> * use `Injector.getAsReactive` method with the context parameter provided.
+> * use of the `Injector.getAsReactive` method with the context parameter provided.
 > * use `StateBuilder` widget.
 
 > `onSetState` and `onRebuildState` can be called in `setState` method for one time use after calling `setState`, or in `StateBuilder` for each time a notification is sent form  models observed by the `StateBuilder` widget.
 
-Try it and you can see that if one counter is incremented, it will affect the other counter because the two counter share the same reactive environnement.
+Try it and you can see that if one counter is incremented, it will affect the other counter because the two counters share the same reactive environment.
 
-## Shared reactive environnement (cleaning environnement with tags):
+## Shared reactive environment (cleaning environment with tags):
 
 With states_rebuilder any time you want to have more control over when to send notification and which widgets will be notified to rebuild, you think directly to `StateBuilder` widget.
 
@@ -283,9 +282,9 @@ class App extends StatelessWidget {
 ```
 The registered reactive singleton is obtained using `Injector.getAsReactive` without the context.[NOTE1]
 
->Whenever you use `StateBuilder` remove the context from `Injector.getAsReactive`, because `StateBuilder` subscribe to the model and is better for fine tune rebuild.
+>Whenever you use `StateBuilder` remove the context from `Injector.getAsReactive` because `StateBuilder` subscribe to the model and is better for fine-tune rebuild.
 
-A `tag` is add to the `CounterPage` widget.
+A `tag` is added to the `CounterPage` widget.
 
 ```dart
 class CounterPage extends StatelessWidget {
@@ -379,13 +378,13 @@ class CounterPage extends StatelessWidget {
 
 Now `SetState` method is called with `filterTags` parameter defined. It takes a list of tags to be used to filter the notification.
 
-With this little change, counters looks like to function independently.
+With this little change, counters look like to function independently.
 
-## New reactive environnement:
+## New reactive environment:
 
 states_rebuilder caches two singletons for each registered model.
 * Raw singleton of the model.
-* reactive singleton of the model which is the raw singleton decorated with reactive environnement.
+* reactive singleton of the model which is the raw singleton decorated with the reactive environment.
 
 > `Injector.get<T>()` returns the raw singleton of type `T` of the registered model.    
 > `Injector.getAsReactive<T>()` returns the reactive singleton of type `ReactiveModel<T>` of the registered model.  
@@ -445,7 +444,7 @@ class App extends StatelessWidget {
 ```
 >New reactive instances are not registered with in the service locator. Each time we call for new reactive instance we get another new reactive instance.
 
-Another way to get new reactive instance is to use `StateBuilder` with generic type and without models property.
+Another way to get a new reactive instance is to use `StateBuilder` with generic type and without 'models' property.
 ```dart
 StateBuilder<T>(
   builder:(BuildContext context, T newReactiveModel){
@@ -501,7 +500,7 @@ class App extends StatelessWidget {
 }
 ```
 
->With the exception of the raw singleton they share, the reactive singleton and the new reactive instances have an independent reactive environment. That is, when a particular reactive instance issues a notification with an error or with `ConnectionState.awaiting`, it will not affect other reactive environments. Nevertheless `states_rebuilder` allows reactive instances to share their notification or state with the reactive singleton. (Object of new example).
+> except for the raw singleton they share, the reactive singleton and the new reactive instances have an independent reactive environment. That is when a particular reactive instance issues a notification with an error or with `ConnectionState.awaiting`, it will not affect other reactive environments. Nevertheless `states_rebuilder` allows reactive instances to share their notification or state with the reactive singleton. (Object of new example).
 
 The `CounterPage` widget is : 
 
@@ -516,7 +515,7 @@ class CounterPage extends StatelessWidget {
     return Container(
       child: Column(
         children: <Widget>[
-        //Use of `StateBuilder` without tag.
+        //Use of `StateBuilder` without a tag.
         //IF new reactive models are created with StateBuilder, we can use Builder here instead of this StateBuilder widget.
           StateBuilder(
             models: [counterService],

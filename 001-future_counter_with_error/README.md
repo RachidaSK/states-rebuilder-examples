@@ -30,7 +30,7 @@ class CounterError extends Error {
 
 
 # Service
-The role of the `CounterService` class is to instantiate the counter (usually via the repository) and define the user cases to be used by the user interface.
+The role of the `CounterService` class is to instantiate the counter (usually via the repository) and define the use cases to be used by the user interface.
 
 
 ```dart
@@ -57,7 +57,7 @@ class CounterService {
 }
 ```
 
->This is all the business logic of your app. It is testable , maintainable and framework independent. 
+>This is all the business logic of your app. It is testable, maintainable and framework independent. 
 
 # User Interface
 
@@ -124,7 +124,7 @@ or with less boilerplate,
 
 Now `counterService` is available and has many useful getter and methods:
 
-Because we are dealing with asynchronous task, we need `connectionState` and `hasError` getters
+Because we are dealing with asynchronous tasks, we need `connectionState` and `hasError` getters
 
 ```dart
 class CounterPage extends StatelessWidget {
