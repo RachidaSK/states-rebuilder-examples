@@ -71,7 +71,7 @@ class CounterService {
 
 # User Interface
 
-## Shared reactive environnement (polluted environnement):
+## Shared reactive environment (polluted environment):
 
 *file : counter_page.dart*
 
@@ -92,7 +92,7 @@ class App extends StatelessWidget {
         inject: [Inject(() => CounterService())],
         builder: (BuildContext context) {
 
-          //NOTE1 : Getting the countersService registered reactive environnement using the context.
+          //NOTE1 : Getting the countersService registered reactive environment using the context.
           final ReactiveModel<CounterService> counterService =
               Injector.getAsReactive(context: context);
 
