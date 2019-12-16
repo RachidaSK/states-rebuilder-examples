@@ -2,6 +2,8 @@
 
 This example consists of a login form with two fields (one for the email and the other for the password) and a login button. The login button is inactive until both fields are validated.
 
+<image src="https://github.com/GIfatahTH/repo_images/blob/master/004-form_login_with_validation.gif" width="300"/>
+
 In this example, we will not use stream but we will use a simple dart class.
 
 # Model:
