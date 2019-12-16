@@ -7,8 +7,13 @@ If an error is thrown, an alert snackBar will appear giving information about th
 This example has three pages:
 
 * Page one: The tow counters will share the same reactive environment. We will see how counters interfere with each other. I call this polluted environment.
+
+<image src="https://github.com/GIfatahTH/repo_images/blob/master/002-double_counter_with_error_befor.gif" width="300"/>
+
 * Page two: This will show how to make the environment clean using tags.
 * Page three: It will show how to make the reactive environment cleaner by creating a new reactive environment for each counter.
+
+<image src="https://github.com/GIfatahTH/repo_images/blob/master/003-double_counter_with_error_after.gif" width="300"/>
 
 
 # Model
