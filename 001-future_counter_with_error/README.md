@@ -2,6 +2,8 @@
 
 This is a counter application that increments a counter after waiting 1 second and has a 1/2 probability of generating an error. If an error is thrown, an alert dialog will appear giving information about the error.
 
+<image src="https://github.com/GIfatahTH/repo_images/blob/master/future_counter_with_error.gif" width="300"/>
+
 # Model
 
 *file : counter.dart*
