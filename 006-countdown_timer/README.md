@@ -2,10 +2,12 @@
 
 In this example, we will build a countdown timer.
 
+![countDown timer](https://github.com/GIfatahTH/repo_images/blob/master/006-countdown_timer.gif).
+
 The countdown timer has three status:
-1. ready status : The initial time is displayed with a play button. 
-2. running status : The time is ticking down each second with two buttons to pause and replay the timer.
-3. paused status : The timer is paused with two buttons to resume and stop the timer
+1. ready status: The initial time is displayed with a play button. 
+2. running status: The time is ticking down each second with two buttons to pause and replay the timer.
+3. paused status: The timer is paused with two buttons to resume and stop the timer
 
 The source of the timer is a dart stream defined in the `TimerModel` class : 
 
@@ -50,7 +52,7 @@ class App extends StatelessWidget {
       appBar: AppBar(title: Text('Countdown Timer')),
       body: Injector(
         inject: [
-          //NOTE1 : Injecting the TimerModel with initial time of 60 seconds
+          //NOTE1: Injecting the TimerModel with an initial time of 60 seconds
           Inject(
             () => TimerModel(60),
             //NOTE2: define the initial customStateStatus of the TimerModel
@@ -66,24 +68,24 @@ class App extends StatelessWidget {
 }
 ```
 
-As always, The first thing to think about is to inject your model in the widget tree [NOTE1].
+As always, the first thing to think about is to inject your model in the widget tree [NOTE1].
 
 with states_rebuilder your models are pure dart classes. It is when obtaining an injected model, that reactivity is implicitly added to your pure dart model. 
 
 Among the getters that are added to the reactive environment are the getters `connectionState` and `hasError`:
 
-`connectionState` define there status the reactive environment can have:
-1. `ConnectionState.none` : for verging environment: That is before calling any method of the model:
+`connectionState` define their status the reactive environment can have.
+1. `ConnectionState.none` : for the virgin environment: this is before calling any method of the model using `setState` method.
 2. `ConnectionState.waiting` : while waiting for an asynchronous task to complete 
 3. `ConnectionState.done` : after the asynchronous task is finished.
 
-`hasError` : is boolean, that is true if the  called method throws an error.
+`hasError`: is boolean, that is true if the called method throws an error.
 
 `connectionState` and `hasError` are set automatically by states_rebuilder, and your role is limited to use them in your UI to display the corresponding view.
 
-states_rebuilder give you the ability to define custom state status other the those defined by `connectionState` and `hasError`. The field `customStateStatus` is here for this purpose.
+states_rebuilder gives you the ability to define custom state status other the those defined by `connectionState` and `hasError`. The field `customStateStatus` is here for this purpose.
 
-In our example we want the `customStateStatus` to take one of the three value defined by the enumeration `TimerStatus`.
+In our example, we want the `customStateStatus` to take one of the three values defined by the enumeration `TimerStatus`.
 
 To define an initial value of the `customStateStatus` that the app starts with, we use the parameter  `initialCustomStateStatus` of the `Inject` [NOTE2]. We set `initialCustomStateStatus`  to `TimerStatus.ready` because we want our app to start with the ready status.
 
@@ -97,7 +99,7 @@ class TimerView extends StatelessWidget {
     //NOTE1 : The context is defined so that it will be subscribed to the TimerModel.
     final timerModel = Injector.getAsReactive<TimerModel>(context: context);
 
-    //NOTE2 : Local variable to hold the current timer value.
+    //NOTE2: Local variable to hold the current timer value.
     int duration;
 
     return Injector(
@@ -122,7 +124,7 @@ class TimerView extends StatelessWidget {
           models: [timerStream],
           //NOTE7 : defining the onSetState callback to be called when this StateBuilder is notified and before the trigger of the rebuilding process.
           onSetState: (_, __) {
-            //NOTE8 : Decrement the duration each time the stream emits a value
+            //NOTE8: Decrement the duration each time the stream emits a value
             duration =
                 timerModel.state.initialTime - timerStream.snapshot.data - 1;
             //NOTE8 : Check if duration reaches zero and set the customStateStatus to be equal to TimerStatus.ready
@@ -139,7 +141,7 @@ class TimerView extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    //NOTE9 : Widget to display a formatted string of the duration.
+                    //NOTE9: Widget to display a formatted string of the duration.
                     child: TimerDigit(
                       duration ?? timerModel.state.initialTime,
                     ),
@@ -188,19 +190,19 @@ class TimerView extends StatelessWidget {
 }
 ```
 
-First of all, we get the registered reactive singleton of the `TimerModel` using `Injector.getAsReactive` model with the context defined. The widget of the defined context is subscribed to the `TimerModel` [NOTE1].
+First of all, we get the registered reactive singleton of the `TimerModel` using `Injector.getAsReactive` method with the context defined. The widget of the defined context is subscribed to the `TimerModel` [NOTE1].
 
 The next step is to inject the stream using `Inject.stream` [NOTE4] and set its initial value to be equal to `initialTime` of the `TimerModel`. 
 
 Noticed that we set the key parameter of the `Injector` widget used to inject the stream to be `UniqueKey()` [NOTE3]. This is a concept related to Flutter. 
 
-`Injector` is a statefulWidget, this means that when it is first created its state life starts by calling its `initState` method then the `build` method which is called each time the `State.setState` method is called or if any of its parent rebuilds. When `Injector` is removed from the widget tree, the `dispose` method is invoked. (There are some other intermediate life cycle methods not related to our case. For more information see this [article](https://flutterbyexample.com/stateful-widget-lifecycle/).
+`Injector` is a statefulWidget, this means that when it is first created its state life starts by calling its `initState` method, then the `build` method which is called each time the `State.setState` method is called or if any of its parent rebuilds. When `Injector` is removed from the widget tree, the `dispose` method is invoked. (There are some other intermediate life cycle methods not related to our case. For more information see this [article](https://flutterbyexample.com/stateful-widget-lifecycle/).
 
-By setting the key parameter of the `Injector` to `UniqueKey()`, The `Injector` state will be dispose and created again if any of its parent widget rebuilds. This is useful for us, because states_rebuilder creates the injected stream in the `ìntState` and close and dispose of it in the `dispose` method. 
+By setting the key parameter of the `Injector` to `UniqueKey()`, The `Injector` state will be disposed and created again if any of its parent widget rebuilds. This is useful for us because states_rebuilder creates the injected stream in the `ìntState` and close and dispose of it in the `dispose` method. 
 
-In our case, when the registered reactive singleton of the `TimerModel` triggers a notification without tag filter. the build method of `TimerView` will be called. At this stage, because we define the key to be unique, the injected stream is stopped and dispose, and a new stream is created and start emitting new set of values. (This is what will be used in the repay button).
+In our case, when the registered reactive singleton of the `TimerModel` triggers a notification without tags filter. the build method of `TimerView` will be called. At this stage, because we define the key to be unique, the injected stream is stopped and dispose, and a new stream is created and starts emitting a new set of values. (This is what will be used in the repay button).
 
-Now that we has injected the stream using `Inject.stream`, we get the registered reactive singleton of the stream using `Injector.getAsReactive` method [NOTE5]. You use the type `int` to get the registered stream because it is injected with this type [NOTE4]. 
+Now that we have injected the stream using `Inject.stream`, we get the registered reactive singleton of the stream using `Injector.getAsReactive` method [NOTE5]. You use the type `int` to get the registered stream because it is injected with this type [NOTE4]. 
 
 We have the option to inject the stream using a custom name, something like this :
 
@@ -225,7 +227,7 @@ final timerStream = Injector.getAsReactive<int>(name: 'customStreamName');
 
 After getting the reactive singleton of the stream we subscribe to it using `StateBuilder` [NOTE6].
 
-The stream emits each second a series of integer number starting from 0 then 1, 2, 3 , 4 ... and so on.
+The stream emits each second a series of integer numbers starting from 0 then 1, 2, 3, 4 ... and so on.
 
 But we want the timer to start from an initial value and count down until it reaches zero. Something like this (60, 59, 58, ... until 0).
 
@@ -233,7 +235,7 @@ The appropriate place to do such a transformation is in the `onSetState` callbac
 
 ```dart
 onSetState: (_, __) {
-    //NOTE8 : Decrement the duration each time the stream emits a value
+    //NOTE8: Decrement the duration each time the stream emits a value
     duration =
         timerModel.state.initialTime - timerStream.snapshot.data - 1;
     //NOTE8 : Check if duration reaches zero and set the customStateStatus to be equal to TimerStatus.ready
@@ -247,7 +249,7 @@ onSetState: (_, __) {
 },
 ```
 
-The `onSetState` callback is called each time the stream emits a value and before building the widget. After decrementing the duration we check if it reaches zero and set the `timerModel.customStateStatus` to be `TimerStatus.ready` and send notification to all subscribe widget. In our case The `TimerView` widget is subscribed to the `timerModel` so it will be notified to rebuild. At this stage, because we define the key to be unique, the injected stream is stopped and dispose, and a new stream is created and start emitting new set of values [NOTE3, NOTE4].
+The `onSetState` callback is called each time the stream emits a value and before building the widget. After decrementing the duration we check if it reaches zero and set the `timerModel.customStateStatus` to be `TimerStatus.ready` and send a notification to all subscribe widget. In our case, The `TimerView` widget is subscribed to the `timerModel` so it will be notified to rebuild. At this stage, because we define the key to be unique, the injected stream is stopped and dispose, and a new stream is created and starts emitting a new set of values [NOTE3, NOTE4].
 
 the `duration` value is passed to the `TimerDigit` widget to display a formated value (minutes : seconds) : [NOTE9]
 
@@ -283,7 +285,7 @@ The reactive singleton `timerModel` has two Widgets subscribed to it:
 
 Whenever `timerModel` sends notification without tag both widgets will rebuild. And as discussed above, the `Injector` of the stream has a unique key [NOTE3] so the stream is closed and a new stream is created. We used this in [NOTE8] when the timer reaches zero. (Another use is in the replay action)
 
-In contrast when `timerModel` sends notification with 'timer' tag only the StateBuilder subscribed with this tag will rebuild and the stream is not closed. (Used in the pause and resume actions).
+In contrast, when `timerModel` sends a notification with 'timer' tag only the StateBuilder subscribed with this tag will rebuild and the stream is not closed. (Used in the pause and resume actions).
 
 The last thing is to display corresponding buttons for each `customStateStatus` :
 
@@ -380,7 +382,7 @@ class RunningStatus extends StatelessWidget {
 
 It consists of two FAB, one for pause and the other for repeat (replay) : 
 * If the pause FAB is pressed, we set `timerService.customStateStatus` to `TimerStatus.paused` and notify listener with 'timer' tag. In `onSetState` callback we pause the stream.
-* If the repeat FAB is pressed, we set `timerService.customStateStatus` to `TimerStatus.running` and notify listener with without tag so that the stream is closed and a brand new stream is created.
+* If the repeat FAB is pressed, we set `timerService.customStateStatus` to `TimerStatus.running` and notify listeners without tag so that the stream is closed and a brand new stream is created.
 
 3. **Paused status** :  In [NOTE14] the `customStateStatus` because it is not ready nor running, so we will display the `PausedStatus` widget: 
 
@@ -434,4 +436,4 @@ class PausedStatus extends StatelessWidget {
 
 It consists of two FAB, one for resume and the other for stop : 
 * If the pause FAB is resume, we set `timerService.customStateStatus` to `TimerStatus.running` and notify listener with 'timer' tag. In `onSetState` callback we resume the stream.
-* If the stop FAB is pressed, we set `timerService.customStateStatus` to `TimerStatus.ready` and notify listener with without tag so that the stream is closed and a brand new stream is created.
+* If the stop FAB is pressed, we set `timerService.customStateStatus` to `TimerStatus.ready` and notify listeners without tag so that the stream is closed and a brand new stream is created.
