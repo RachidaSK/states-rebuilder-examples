@@ -106,10 +106,10 @@ class CounterBox extends StatelessWidget {
             models: [counterService],
             tag: tag,
             builder: (BuildContext context, _) {
-              if (counterService.connectionState == ConnectionState.none) {
+              if (counterService.isIdle) {
                 return Text('Top on the btn to increment the counter');
               }
-              if (counterService.connectionState == ConnectionState.waiting) {
+              if (counterService.isWaiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -137,15 +137,12 @@ class CounterBox extends StatelessWidget {
               counterService.setState(
                 (state) => state.increment(seconds),
                 filterTags: [tag],
-                catchError: true,
-                onSetState: (BuildContext context) {
-                  if (counterService.hasError) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(counterService.error.message),
-                      ),
-                    );
-                  }
+                onError: (BuildContext context, dynamic error) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(counterService.error.message),
+                    ),
+                  );
                 },
               );
             },

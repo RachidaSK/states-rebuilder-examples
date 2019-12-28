@@ -221,12 +221,12 @@ class CounterBox extends StatelessWidget {
             builder: (BuildContext context, _) {
 
               //NOTE3: Check if no button is clicked yet. Just after the app starts.
-              if (counterService.connectionState == ConnectionState.none) {
+              if (counterService.isIdle) {
                 return Text('Top on the btn to increment the counter');
               }
 
               //NOTE4: Check if an asynchronous method is waiting for a result.
-              if (counterService.connectionState == ConnectionState.waiting) {
+              if (counterService.isWaiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -261,18 +261,14 @@ class CounterBox extends StatelessWidget {
                 //NOTE5: Filter the notification with the tag.
                 filterTags: [tag],
 
-                //NOTE5: set to true to catch error
-                catchError: true,
 
-                //NOTE5: Side effect to be executed after notification is sent and before rebuilding the widget.
-                onSetState: (BuildContext context) {
-                  if (counterService.hasError) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(counterService.error.message),
-                      ),
-                    );
-                  }
+                //NOTE5: onError callback.
+                onError: (BuildContext context, dynamic error) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(counterService.error.message),
+                    ),
+                  );
                 },
               );
             },
@@ -343,8 +339,7 @@ class CounterGridPage2 extends StatelessWidget {
               tag: 'appBar',
               builder: (context, _) {
                 
-                if (counterServiceSingleton.connectionState ==
-                    ConnectionState.waiting) {
+                if (counterServiceSingleton.isWaiting) {
                   return Row(
                     children: <Widget>[
 
@@ -550,10 +545,10 @@ class CounterBox extends StatelessWidget {
             models: [counterService],
             tag: tag,
             builder: (BuildContext context, _) {
-              if (counterService.connectionState == ConnectionState.none) {
+              if (counterService.isIdle) {
                 return Text('Top on the btn to increment the counter');
               }
-              if (counterService.connectionState == ConnectionState.waiting) {
+              if (counterService.isWaiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -582,17 +577,14 @@ class CounterBox extends StatelessWidget {
                 (state) => state.increment(seconds),
                 //NOTE1: Notify StateBuilder widget with these tags.
                 filterTags: [tag, 'appBar'],
-                catchError: true,
-                onSetState: (BuildContext context) {
-                  //NOTE2 : Send custom data to reactive singleton
-                  counterService.joinSingletonToNewData = name;
-                  if (counterService.hasError) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(counterService.error.message),
-                      ),
-                    );
-                  }
+                //NOTE2 : Send custom data to reactive singleton
+                joinSingletonToNewData: name,
+                onError: (BuildContext context, dynamic error) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(counterService.error.message),
+                    ),
+                  );
                 },
               );
             },
@@ -639,29 +631,16 @@ counterService.setState(
 ```
 is called on the new reactive instance `counterService` of first counter.
    
-3. Because `increment` is asynchronous method, the reactive `connectionState` si set to `waiting` and notification is sent to the widgets with tags `blueCounter` and `appBar` that are subscribed to the counter one new reactive instance `counterService`. The other new reactive instance of the second, third and fourth counter will not be affected.   
+3. Because `increment` is asynchronous method, the reactive `connectionState` is set to `waiting` and notification is sent to the widgets with tags `blueCounter` and `appBar` that are subscribed to the counter one new reactive instance `counterService`. The other new reactive instance of the second, third and fourth counter will not be affected.   
 
 4. Because we set `joinSingleton` to `JoinSingleton.withCombinedReactiveInstances`, the `connectionState` of the reactive singleton is set to `waiting` and notification is sent to the widgets with tags `blueCounter` and `appBar` that are subscribed to the reactive singleton.    
 
-5. Before rebuilding listening widgets, `onSetState` is called to execute side effects;
-```dart
-onSetState: (BuildContext context) {
-    counterService.joinSingletonToNewData = name;
-    if (counterService.hasError) {
-    Scaffold.of(context).showSnackBar(
-        SnackBar(
-        content: Text(counterService.error.message),
-        ),
-    );
-    }
-},
-```
-In the  `onSetState`, we set `joinSingletonToNewData` of the first counter reactive instance to hold the name of the counter which is 'counter 1'. This name is send to the reactive singleton.
+5. Before rebuilding listening widgets, `onSetState` is called and it execute the `onError` callback. We set `joinSingletonToNewData` parameter to hold the name of the counter which is 'counter 1'. This name is send to the reactive singleton.
 After we check if the first counter reactive instance has an error and display a snackBar.   
 
 6. Now listening widgets will rebuild to reproduce the new state. The first counter will display a `CircularProgressIndicator ` from this code:
 ```dart
-if (counterService.connectionState == ConnectionState.waiting) {
+if (counterService.isWaiting) {
 return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: <Widget>[
@@ -673,7 +652,7 @@ return Row(
 ```
 and the application AppBar will display the String 'counter 1' followed by a `CircularProgressIndicator`. The the String 'counter 1' is hold in the field `joinSingletonToNewData` of the reactive singleton : 
 ```dart
-if (counterServiceSingleton.connectionState == ConnectionState.waiting) {
+if (counterServiceSingleton.isWaiting) {
     return Row(
     children: <Widget>[
         Text(
