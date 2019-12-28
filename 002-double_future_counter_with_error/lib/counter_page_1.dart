@@ -44,11 +44,11 @@ class CounterPage extends StatelessWidget {
         children: <Widget>[
           Builder(
             builder: (BuildContext context) {
-              if (counterService.connectionState == ConnectionState.none) {
+              if (counterService.isIdle) {
                 return Text(
                     'Top on the plus button to start incrementing the counter');
               }
-              if (counterService.connectionState == ConnectionState.waiting) {
+              if (counterService.isWaiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -75,15 +75,12 @@ class CounterPage extends StatelessWidget {
             onPressed: () {
               counterService.setState(
                 (state) => state.increment(seconds),
-                catchError: true,
-                onSetState: (BuildContext context) {
-                  if (counterService.hasError) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(counterService.error.message),
-                      ),
-                    );
-                  }
+                onError: (BuildContext context, dynamic error) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(counterService.error.message),
+                    ),
+                  );
                 },
               );
             },

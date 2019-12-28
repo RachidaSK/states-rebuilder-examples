@@ -196,6 +196,14 @@ class CounterPage extends StatelessWidget {
                     );
                   }
                 },
+                //You can replace the catchError and onSetState parameter with onError parameter
+                //onError: (BuildContext context, dynamic error) {
+                //  Scaffold.of(context).showSnackBar(
+                //    SnackBar(
+                //      content: Text(counterService.error.message),
+                //    ),
+                //  );
+                //},
               );
             },
             icon: Icon(
@@ -343,15 +351,12 @@ class CounterPage extends StatelessWidget {
                 (state) => state.increment(seconds),
                 //NOTE3: Defining list of tags to be notified.
                 filterTags: [tag],
-                catchError: true,
-                onSetState: (BuildContext context) {
-                  if (counterService.hasError) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(counterService.error.message),
-                      ),
-                    );
-                  }
+                onError: (BuildContext context, dynamic error) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(counterService.error.message),
+                    ),
+                  );
                 },
               );
             },
@@ -556,16 +561,13 @@ class CounterPage extends StatelessWidget {
             onPressed: () {
               counterService.setState(
                 (state) => state.increment(seconds),
-                catchError: true,
                 //NOTE1 : remove of filteredTag parameter. Notification is sent to all observers
-                onSetState: (BuildContext context) {
-                  if (counterService.hasError) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(counterService.error.message),
-                      ),
-                    );
-                  }
+                onError: (BuildContext context, dynamic error) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(counterService.error.message),
+                    ),
+                  );
                 },
               );
             },
