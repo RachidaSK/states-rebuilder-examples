@@ -147,12 +147,14 @@ class CounterPage extends StatelessWidget {
             Builder(
               builder: (BuildContext context) {
                 //Before requesting the asynchronous method. (At the start of the app)
+                //You can use counterService.isIdle instead of counterService.connectionState == ConnectionState.none
                 if (counterService.connectionState == ConnectionState.none) {
                   return Text(
                       'Top on the plus button to start incrementing the counter');
                 }
 
                 //while waiting for the asynchronous method to complete
+                //You can use counterService.isWaiting instead of counterService.connectionState == ConnectionState.none
                 if (counterService.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
                 }
@@ -230,6 +232,43 @@ IconButton(
     },
 )
 ```
+
+You can us the `onError` parameter of the `setState` method :
+
+```dart
+IconButton(
+    icon: Icon(Icons.add),
+    iconSize: 40,
+    onPressed: () {
+    counterService.setState(
+        (state) => state.increment(),
+        onError: (BuildContext context, dynamic error) {
+          String errorMessage;
+          if (error is CounterError) {
+            errorMessage = error.message;
+          } else {
+            errorMessage = 'Unexpected error';
+            //You can throw unhandled errors
+            //To de so, uncomment the fallowing line
+            // throw(error);
+
+          }
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Icon(Icons.error),
+                content: Text(errorMessage),
+              );
+            },
+          );
+        },
+    );
+    },
+)
+```
+
+
 # StateBuilder
 
 This is the same example this time using `StateBuilder` widget
@@ -286,11 +325,11 @@ class CounterPage extends StatelessWidget {
                 }
               },
               builder: (BuildContext context, _) {
-                if (counterService.connectionState == ConnectionState.none) {
+                if (counterService.isIdle) {
                   return Text(
                       'Top on the plus button to start incrementing the counter');
                 }
-                if (counterService.connectionState == ConnectionState.waiting) {
+                if (counterService.isWaiting) {
                   return CircularProgressIndicator();
                 }
 

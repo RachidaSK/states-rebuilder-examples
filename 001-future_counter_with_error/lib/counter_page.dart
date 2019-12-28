@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
+import 'counter_error.dart';
 import 'counter_service.dart';
 
 class App extends StatelessWidget {
@@ -61,19 +62,26 @@ class CounterPage extends StatelessWidget {
               onPressed: () {
                 counterService.setState(
                   (state) => state.increment(),
-                  catchError: true,
-                  onSetState: (BuildContext context) {
-                    if (counterService.hasError) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Icon(Icons.error),
-                            content: Text(counterService.error.message),
-                          );
-                        },
-                      );
+                  onError: (BuildContext context, dynamic error) {
+                    String errorMessage;
+                    if (error is CounterError) {
+                      errorMessage = error.message;
+                    } else {
+                      errorMessage = 'Unexpected error';
+                      //You can throw unhandled errors
+                      //To de so, uncomment the fallowing line
+                      // throw(error);
+
                     }
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Icon(Icons.error),
+                          content: Text(errorMessage),
+                        );
+                      },
+                    );
                   },
                 );
               },
