@@ -34,11 +34,11 @@ class CounterPage extends StatelessWidget {
           children: <Widget>[
             Builder(
               builder: (BuildContext context) {
-                if (counterService.connectionState == ConnectionState.none) {
+                if (counterService.isIdle) {
                   return Text(
                       'Top on the plus button to start incrementing the counter');
                 }
-                if (counterService.connectionState == ConnectionState.waiting) {
+                if (counterService.isWaiting) {
                   return CircularProgressIndicator();
                 }
 
