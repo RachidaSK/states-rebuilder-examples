@@ -1,7 +1,3 @@
-import 'package:clean_architecture_dane_mackier_app/domain/entities/comment.dart';
-import 'package:clean_architecture_dane_mackier_app/domain/exceptions/validation_exception.dart';
-import 'package:clean_architecture_dane_mackier_app/domain/value_objects/email.dart';
-
 import '../domain/entities/user.dart';
 import 'common/input_parser.dart';
 import 'interfaces/i_api.dart';
