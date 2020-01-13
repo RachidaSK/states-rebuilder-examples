@@ -15,10 +15,10 @@ class AuthenticationService {
 
     _fetchedUser = await _api.getUserProfile(userId);
 
-    //// TODO1 : throw unhandled exception
+    // // TODO1 : throw unhandled exception
     // throw Exception();
 
-    ////TODO2: Instantiate a value object in a bad state.
+    //TODO2: Instantiate a value object in a bad state.
     // Comment(
     //   id: 1,
     //   email: Email('email.com'), //Bad email
@@ -27,15 +27,15 @@ class AuthenticationService {
     //   postId: 2,
     // );
 
-    ////TODO3: try to persist an entity is bad state.
-    // Comment(
-    //   id: 1,
-    //   email: Email('email@m.com'), //Bad email
-    //   name: 'Joe',
-    //   body: 'comment',
-    //   postId: 2,
-    // )
-    //   ..postId = null
-    //   ..toJson();
+    //TODO3: try to persist an entity is bad state.
+  //   Comment(
+  //     id: 1,
+  //     email: Email('email@m.com'), //Bad email
+  //     name: 'Joe',
+  //     body: 'comment',
+  //     postId: 2,
+  //   )
+  //     ..postId = null
+  //     ..toJson();
   }
 }

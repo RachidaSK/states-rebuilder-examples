@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-import 'repository/api.dart';
+import 'data_source/api.dart';
 import 'service/authentication_service.dart';
 import 'service/interfaces/i_api.dart';
 import 'ui/router.dart';

@@ -1,6 +1,6 @@
 # clean_architecture_dane_mackier_app
 
-The architecture consists of something like onion layers, the innermost one is the domain layer, the middle layer is the service layer and the outer layer consists of three parts: the user interface  UI, repository and infrastructure. Each of the parts of the architecture is implemented using folders.
+The architecture consists of something like onion layers, the innermost one is the domain layer, the middle layer is the service layer and the outer layer consists of three parts: the user interface  UI, data_source and infrastructure. Each of the parts of the architecture is implemented using folders.
 
 Code dependencies can only point inwards. Nothing in an inner circle can know anything at all about something in an outer circle. In particular, the name of something declared in an outer circle must not be mentioned by the code in the inner circle.
 ```
@@ -9,7 +9,7 @@ Code dependencies can only point inwards. Nothing in an inner circle can know an
     |        | **- entities :** (mutable objects with unique IDs.  
     |        |              They are the in-memory representation of   
     |        |              the data that was retrieved from the persistence   
-    |        |              store (repository))  
+    |        |              store (data_source))  
     |        |   
     |        | **- value objects :** (immutable objects which have value equality   
     |        |                      and self-validation but no IDs)  
@@ -23,11 +23,11 @@ Code dependencies can only point inwards. Nothing in an inner circle can know an
     |        | **- interfaces :** (interfaces that should any external service implements)  
     |        |   
     |        | **- exceptions :** (all custom exceptions classes that can be thrown   
-    |        |                    from the service, infrastructure and repository)  
+    |        |                    from the service, infrastructure and data_source)  
     |        |   
     |        | **- common :**(common utilities shared inside the service)   
     |  
-    | **-repository** : (implements interfaces defined and throws exception defined in   
+    | **-data_source** : (implements interfaces defined and throws exception defined in   
     |        |                the service layer. It is used to fetch and persist data  
     |        |                and instantiate entities and value objects)  
     |  
@@ -48,7 +48,7 @@ Code dependencies can only point inwards. Nothing in an inner circle can know an
 ```   
 # Domain
 ## Entities
-> Entities are mutable objects with unique IDs. They are the in-memory representation of the data that was retrieved from the persistence store (repository). They must contain all the logic it controls. They should be validate just before persistance.
+> Entities are mutable objects with unique IDs. They are the in-memory representation of the data that was retrieved from the persistence store (data_source). They must contain all the logic it controls. They should be validate just before persistance.
 
 There are three entities: User, Post, and Comment.
 ### User entity :
@@ -62,14 +62,14 @@ class User {
   //Typically called form service layer to create a new user
   User({this.id, this.name, this.username});
 
-  //Typically called from the repository layer after getting data from an external source.
+  //Typically called from the data_source layer after getting data from an external source.
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     username = json['username'];
   }
 
-  //Typically called from service or repository layer just before persisting data.
+  //Typically called from service or data_source layer just before persisting data.
   //It is the appropriate time to check data validity before persistence.
   Map<String, dynamic> toJson() {
     //validate
@@ -358,8 +358,8 @@ class CommentNotFoundException extends Error {
 }
 ```
 
-# repository
-**file:lib/repository/api.dart**
+# data_source
+**file:lib/data_source/api.dart**
 ```dart
 //Implement the IApi class form the interface folder of the service layer.
 //Errors must be catches and custom error defined in the service layer must be thrown instead.
