@@ -96,7 +96,7 @@ class CounterGridPage1 extends StatelessWidget {
       inject: [Inject(() => CounterService())],
       builder: (BuildContext context) {
         //NOTE2: Obtaining the registered reactive singleton.
-        final counterService =
+        final counterServiceRM =
             Injector.getAsReactive<CounterService>(context: context);
 
         return Scaffold(
@@ -110,19 +110,19 @@ class CounterGridPage1 extends StatelessWidget {
 
               //Note3 CounterApp Widget
               CounterApp(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 name: 'Counter 1',
               ),
               CounterApp(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 name: 'Counter 2',
               ),
               CounterApp(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 name: 'Counter 3',
               ),
               CounterApp(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 name: 'Counter 4',
               ),
             ],
@@ -140,8 +140,8 @@ The `GridView` displays four `CounterApp` widgets:
 
 ```dart
 class CounterApp extends StatelessWidget {
-  const CounterApp({Key key, this.counterService, this.name}) : super(key: key);
-  final ReactiveModel<CounterService> counterService;
+  const CounterApp({Key key, this.counterServiceRM, this.name}) : super(key: key);
+  final ReactiveModel<CounterService> counterServiceRM;
   final String name;
 
   @override
@@ -151,7 +151,7 @@ class CounterApp extends StatelessWidget {
         data: ThemeData(
             //NOTE1 : Set the primarySwatch color to red if the reactive instance has an error
             primarySwatch:
-                counterService.hasError ? Colors.red : Colors.lightBlue),
+                counterServiceRM.hasError ? Colors.red : Colors.lightBlue),
         child: Scaffold(
           appBar: AppBar(
             title: Text(name),
@@ -161,14 +161,14 @@ class CounterApp extends StatelessWidget {
             children: <Widget>[
               //NOTE2 : CounterBox widget. Blue counter with one second of waiting
               CounterBox(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 seconds: 1,
                 tag: 'blueCounter',
                 color: Colors.blue,
               ),
               //NOTE2 : CounterBox widget. green counter with three seconds of waiting
               CounterBox(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 seconds: 3,
                 tag: 'greenCounter',
                 color: Colors.green,
@@ -197,13 +197,13 @@ As the state management requires, we check if the reactive instance has an error
 class CounterBox extends StatelessWidget {
   CounterBox({
     this.seconds,
-    this.counterService,
+    this.counterServiceRM,
     this.tag,
     this.color,
   });
 
   final int seconds;
-  final ReactiveModel<CounterService> counterService;
+  final ReactiveModel<CounterService> counterServiceRM;
   final String tag;
   final Color color;
 
@@ -212,21 +212,21 @@ class CounterBox extends StatelessWidget {
     return Container(
       child: Column(
         children: <Widget>[
-          //NOTE1: Use of StateBuilder widget to subscribe to counterService reactive instance
+          //NOTE1: Use of StateBuilder widget to subscribe to counterServiceRM reactive instance
           StateBuilder(
-            models: [counterService],
+            models: [counterServiceRM],
             //NOTE2: tag to be used to filter rebuild
             tag: tag,
 
             builder: (BuildContext context, _) {
 
               //NOTE3: Check if no button is clicked yet. Just after the app starts.
-              if (counterService.isIdle) {
+              if (counterServiceRM.isIdle) {
                 return Text('Top on the btn to increment the counter');
               }
 
               //NOTE4: Check if an asynchronous method is waiting for a result.
-              if (counterService.isWaiting) {
+              if (counterServiceRM.isWaiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -237,16 +237,16 @@ class CounterBox extends StatelessWidget {
               }
 
               //NOTE4: Check the asynchronous end with an error and display the error message.
-              if (counterService.hasError) {
+              if (counterServiceRM.hasError) {
                 return Text(
-                  counterService.error.message,
+                  counterServiceRM.error.message,
                   style: TextStyle(color: Colors.red),
                 );
               }
 
               //NOTE4: The safe stage: No error and the future is resolved with data.
               return Text(
-                ' ${counterService.state.counter.count}',
+                ' ${counterServiceRM.state.counter.count}',
                 style: TextStyle(fontSize: 30),
               );
             },
@@ -255,7 +255,7 @@ class CounterBox extends StatelessWidget {
           IconButton(
             onPressed: () {
              //NOTE5: Trigger the increment event to mutate the state and notify listeners
-              counterService.setState(
+              counterServiceRM.setState(
                 (state) => state.increment(seconds),
 
                 //NOTE5: Filter the notification with the tag.
@@ -266,7 +266,7 @@ class CounterBox extends StatelessWidget {
                 onError: (BuildContext context, dynamic error) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(counterService.error.message),
+                      content: Text(counterServiceRM.error.message),
                     ),
                   );
                 },
@@ -378,36 +378,36 @@ class CounterGridPage2 extends StatelessWidget {
             children: <Widget>[
               //NOTE5: Creating a new reactive instance using StateBuilder with generic type and without models parameter.
               StateBuilder<CounterService>(
-                builder: (context, counterService) {
+                builder: (context, counterServiceRM) {
                   return CounterApp(
-                    counterService: counterService,
+                    counterServiceRM: counterServiceRM,
                     name: 'Counter 1',
                   );
                 },
               ),
               //NOTE5: new reactive instance for counter2
               StateBuilder<CounterService>(
-                builder: (context, counterService) {
+                builder: (context, counterServiceRM) {
                   return CounterApp(
-                    counterService: counterService,
+                    counterServiceRM: counterServiceRM,
                     name: 'Counter 2',
                   );
                 },
               ),
               //NOTE5: new reactive instance for counter3
               StateBuilder<CounterService>(
-                builder: (context, counterService) {
+                builder: (context, counterServiceRM) {
                   return CounterApp(
-                    counterService: counterService,
+                    counterServiceRM: counterServiceRM,
                     name: 'Counter 3',
                   );
                 },
               ),
               //NOTE5: new reactive instance for counter4
               StateBuilder<CounterService>(
-                builder: (context, counterService) {
+                builder: (context, counterServiceRM) {
                   return CounterApp(
-                    counterService: counterService,
+                    counterServiceRM: counterServiceRM,
                     name: 'Counter 4',
                   );
                 },
@@ -458,8 +458,8 @@ Let's continue with the `CounterApp` widget:
 
 ```dart
 class CounterApp extends StatelessWidget {
-  const CounterApp({Key key, this.counterService, this.name}) : super(key: key);
-  final ReactiveModel<CounterService> counterService;
+  const CounterApp({Key key, this.counterServiceRM, this.name}) : super(key: key);
+  final ReactiveModel<CounterService> counterServiceRM;
   final String name;
 
   @override
@@ -467,14 +467,14 @@ class CounterApp extends StatelessWidget {
     return Container(
       //NOTE1: Changing the primarySwatch color to red if there is an error.
       child: StateBuilder(
-        models: [counterService],
+        models: [counterServiceRM],
         //NOTE1 : Using the tag to notify this StateBuilder when an error happens
         tag: 'appBar',
         builderWithChild: (context, snapshot, child) {
           return Theme(
             data: ThemeData(
               primarySwatch:
-                  counterService.hasError ? Colors.red : Colors.lightBlue,
+                  counterServiceRM.hasError ? Colors.red : Colors.lightBlue,
             ),
             child: child,
           );
@@ -487,14 +487,14 @@ class CounterApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               CounterBox(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 seconds: 1,
                 tag: 'blueCounter',
                 color: Colors.blue,
                 name: name,
               ),
               CounterBox(
-                counterService: counterService,
+                counterServiceRM: counterServiceRM,
                 seconds: 3,
                 tag: 'greenCounter',
                 color: Colors.green,
@@ -526,13 +526,13 @@ The `CounterBox` widget is :
 class CounterBox extends StatelessWidget {
   CounterBox({
     this.seconds,
-    this.counterService,
+    this.counterServiceRM,
     this.tag,
     this.color,
     this.name,
   });
   final int seconds;
-  final ReactiveModel<CounterService> counterService;
+  final ReactiveModel<CounterService> counterServiceRM;
   final String tag;
   final Color color;
   final String name;
@@ -542,13 +542,13 @@ class CounterBox extends StatelessWidget {
       child: Column(
         children: <Widget>[
           StateBuilder(
-            models: [counterService],
+            models: [counterServiceRM],
             tag: tag,
             builder: (BuildContext context, _) {
-              if (counterService.isIdle) {
+              if (counterServiceRM.isIdle) {
                 return Text('Top on the btn to increment the counter');
               }
-              if (counterService.isWaiting) {
+              if (counterServiceRM.isWaiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -558,22 +558,22 @@ class CounterBox extends StatelessWidget {
                 );
               }
 
-              if (counterService.hasError) {
+              if (counterServiceRM.hasError) {
                 return Text(
-                  counterService.error.message,
+                  counterServiceRM.error.message,
                   style: TextStyle(color: Colors.red),
                 );
               }
 
               return Text(
-                ' ${counterService.state.counter.count}',
+                ' ${counterServiceRM.state.counter.count}',
                 style: TextStyle(fontSize: 30),
               );
             },
           ),
           IconButton(
             onPressed: () {
-              counterService.setState(
+              counterServiceRM.setState(
                 (state) => state.increment(seconds),
                 //NOTE1: Notify StateBuilder widget with these tags.
                 filterTags: [tag, 'appBar'],
@@ -582,7 +582,7 @@ class CounterBox extends StatelessWidget {
                 onError: (BuildContext context, dynamic error) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(counterService.error.message),
+                      content: Text(counterServiceRM.error.message),
                     ),
                   );
                 },
@@ -623,15 +623,15 @@ This is an example of the chronology of state nonfiction:
 
 2. The method :
 ```dart
-counterService.setState(
+counterServiceRM.setState(
    (state) => state.increment(seconds),
    filterTags: [tag, 'appBar'],
    ...
 )
 ```
-is called on the new reactive instance `counterService` of first counter.
+is called on the new reactive instance `counterServiceRM` of first counter.
    
-3. Because `increment` is asynchronous method, the reactive `connectionState` is set to `waiting` and notification is sent to the widgets with tags `blueCounter` and `appBar` that are subscribed to the counter one new reactive instance `counterService`. The other new reactive instance of the second, third and fourth counter will not be affected.   
+3. Because `increment` is asynchronous method, the reactive `connectionState` is set to `waiting` and notification is sent to the widgets with tags `blueCounter` and `appBar` that are subscribed to the counter one new reactive instance `counterServiceRM`. The other new reactive instance of the second, third and fourth counter will not be affected.   
 
 4. Because we set `joinSingleton` to `JoinSingleton.withCombinedReactiveInstances`, the `connectionState` of the reactive singleton is set to `waiting` and notification is sent to the widgets with tags `blueCounter` and `appBar` that are subscribed to the reactive singleton.    
 
@@ -640,7 +640,7 @@ After we check if the first counter reactive instance has an error and display a
 
 6. Now listening widgets will rebuild to reproduce the new state. The first counter will display a `CircularProgressIndicator ` from this code:
 ```dart
-if (counterService.isWaiting) {
+if (counterServiceRM.isWaiting) {
 return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: <Widget>[

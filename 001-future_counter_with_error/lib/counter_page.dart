@@ -22,7 +22,7 @@ class App extends StatelessWidget {
 class CounterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ReactiveModel<CounterService> counterService =
+    final ReactiveModel<CounterService> counterServiceRM =
         Injector.getAsReactive(context: context);
     return Scaffold(
       appBar: AppBar(
@@ -35,23 +35,23 @@ class CounterPage extends StatelessWidget {
           children: <Widget>[
             Builder(
               builder: (BuildContext context) {
-                if (counterService.isIdle) {
+                if (counterServiceRM.isIdle) {
                   return Text(
                       'Top on the plus button to start incrementing the counter');
                 }
-                if (counterService.isWaiting) {
+                if (counterServiceRM.isWaiting) {
                   return CircularProgressIndicator();
                 }
 
-                if (counterService.hasError) {
+                if (counterServiceRM.hasError) {
                   return Text(
-                    counterService.error.message,
+                    counterServiceRM.error.message,
                     style: TextStyle(color: Colors.red),
                   );
                 }
 
                 return Text(
-                  ' ${counterService.state.counter.count}',
+                  ' ${counterServiceRM.state.counter.count}',
                   style: TextStyle(fontSize: 20),
                 );
               },
@@ -60,7 +60,7 @@ class CounterPage extends StatelessWidget {
               icon: Icon(Icons.add),
               iconSize: 40,
               onPressed: () {
-                counterService.setState(
+                counterServiceRM.setState(
                   (state) => state.increment(),
                   onError: (BuildContext context, dynamic error) {
                     String errorMessage;

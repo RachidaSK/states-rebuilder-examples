@@ -46,6 +46,9 @@ Code dependencies can only point inwards. Nothing in an inner circle can know an
     |        |   
     |        | **- common :**(common utilities shared inside the ui)  
 ```   
+
+For more detail on the implemented clean architecture read [this article](https://medium.com/flutter-community/clean-architecture-with-states-rebuilder-has-never-been-cleaner-6c9b91c3b9b6#a588)
+
 # Domain
 ## Entities
 > Entities are mutable objects with unique IDs. They are the in-memory representation of the data that was retrieved from the persistence store (data_source). They must contain all the logic it controls. They should be validate just before persistance.
@@ -299,10 +302,6 @@ class CommentsService {
 **file:lib/service/interfaces/i_api.dart**
 
 ```dart
-import '../../domain/entities/comment.dart';
-import '../../domain/entities/post.dart';
-import '../../domain/entities/user.dart';
-
 abstract class IApi {
   Future<User> getUserProfile(int userId);
   Future<List<Post>> getPostsForUser(int userId);
@@ -312,8 +311,6 @@ abstract class IApi {
 ## common
 **file:lib/common/input_parser.dart**
 ```dart
-import '../exceptions/input_exception.dart';
-
 class InputParser {
   static int parse(String userIdText) {
     var userId = int.tryParse(userIdText);

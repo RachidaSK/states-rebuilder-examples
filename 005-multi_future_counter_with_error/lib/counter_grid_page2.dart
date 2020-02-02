@@ -14,20 +14,20 @@ class CounterGridPage2 extends StatelessWidget {
         )
       ],
       builder: (BuildContext context) {
-        final counterServiceSingleton =
+        final counterServiceSingletonRM =
             Injector.getAsReactive<CounterService>();
         return Scaffold(
           appBar: AppBar(
             title: StateBuilder(
-              models: [counterServiceSingleton],
+              models: [counterServiceSingletonRM],
               tag: 'appBar',
               builder: (context, _) {
-                if (counterServiceSingleton.connectionState ==
+                if (counterServiceSingletonRM.connectionState ==
                     ConnectionState.waiting) {
                   return Row(
                     children: <Widget>[
                       Text(
-                          '${counterServiceSingleton.joinSingletonToNewData}  '),
+                          '${counterServiceSingletonRM.joinSingletonToNewData}  '),
                       CircularProgressIndicator(
                         backgroundColor: Colors.white,
                       ),
@@ -35,7 +35,7 @@ class CounterGridPage2 extends StatelessWidget {
                   );
                 }
 
-                if (counterServiceSingleton.hasError) {
+                if (counterServiceSingletonRM.hasError) {
                   return Text(
                     'Some counters have ERROR',
                     style: TextStyle(
@@ -44,7 +44,7 @@ class CounterGridPage2 extends StatelessWidget {
                   );
                 }
 
-                if (counterServiceSingleton.hasData) {
+                if (counterServiceSingletonRM.hasData) {
                   return Text('All counters have data');
                 }
 
@@ -177,12 +177,14 @@ class CounterBox extends StatelessWidget {
                 return Text('Top on the btn to increment the counter');
               }
               if (counterService.isWaiting) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text('$seconds second(s) wait  '),
-                    CircularProgressIndicator(),
-                  ],
+                return Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('$seconds second(s) wait  '),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
                 );
               }
 
@@ -204,7 +206,7 @@ class CounterBox extends StatelessWidget {
               counterService.setState(
                 (state) => state.increment(seconds),
                 filterTags: [tag, 'appBar'],
-                joinSingletonToNewData: name,
+                joinSingletonToNewData: () => name,
                 onError: (BuildContext context, dynamic error) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(

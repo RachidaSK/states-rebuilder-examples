@@ -9,7 +9,7 @@ class CounterGridPage1 extends StatelessWidget {
     return Injector(
       inject: [Inject(() => CounterService())],
       builder: (BuildContext context) {
-        final counterService =
+        final counterServiceRM =
             Injector.getAsReactive<CounterService>(context: context);
         return Scaffold(
           appBar: AppBar(title: Text('Future counter with error')),
@@ -18,19 +18,19 @@ class CounterGridPage1 extends StatelessWidget {
             childAspectRatio: 0.68,
             children: <Widget>[
               CounterApp(
-                counterService: counterService,
+                counterService: counterServiceRM,
                 name: 'Counter 1',
               ),
               CounterApp(
-                counterService: counterService,
+                counterService: counterServiceRM,
                 name: 'Counter 2',
               ),
               CounterApp(
-                counterService: counterService,
+                counterService: counterServiceRM,
                 name: 'Counter 3',
               ),
               CounterApp(
-                counterService: counterService,
+                counterService: counterServiceRM,
                 name: 'Counter 4',
               ),
             ],
