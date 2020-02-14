@@ -2,7 +2,10 @@
 
 The architecture consists of something like onion layers, the innermost one is the domain layer, the middle layer is the service layer and the outer layer consists of three parts: the user interface  UI, data_source and infrastructure. Each of the parts of the architecture is implemented using folders.
 
-Code dependencies can only point inwards. Nothing in an inner circle can know anything at all about something in an outer circle. In particular, the name of something declared in an outer circle must not be mentioned by the code in the inner circle.
+![Clean Architecture](https://github.com/GIfatahTH/repo_images/blob/master/008-Clean-Architecture.png).
+
+Code dependencies can only point inwards. Nothing in an inner circle can know anything at all about something in an outer circle. In particular, the name of something declared in an outer circle must not be mentioned by the code in the inner circle. In particular data_source and infrastructure must implement interfaces defined in the service layer.
+
 ```
 **lib -**  
     | **- domain**  
@@ -26,21 +29,24 @@ Code dependencies can only point inwards. Nothing in an inner circle can know an
     |        |                    from the service, infrastructure and data_source)  
     |        |   
     |        | **- common :**(common utilities shared inside the service)   
+    |        |   
+    |        | **- use case classes  
     |  
-    | **-data_source** : (implements interfaces defined and throws exception defined in   
+    | **-data_source** : (implements interfaces and throws exception defined in   
     |        |                the service layer. It is used to fetch and persist data  
     |        |                and instantiate entities and value objects)  
     |  
-    | **-infrastructure** : (implements interfaces defined and throws exception defined in   
+    | **-infrastructure** : (implements interfaces and throws exception defined in   
     |        |                the service layer. It is used to call third party libraries   
-    |        |                to make a call or send a message or email,.... )  
+    |        |                to communicate with the underplaying infrastructure framework for
+    |        |               example making a call or sending a message or email, using GPS.... )  
     |         
     | **UI**  
     |        | **- pages** :(collection of pages the UI has).  
     |        |   
     |        | **- widgets**: (small and reusable widgets that should be app independent. 
     |        |                 If you use a widget from external libraries, put it in this folder
-    |        |                 and adapt its interface, so you can change it easily later (adapter pattern)
+    |        |                 and adapt its interface, 
     |        |   
     |        | **- exceptions :** (Handle exceptions)  
     |        |   
@@ -48,6 +54,11 @@ Code dependencies can only point inwards. Nothing in an inner circle can know an
 ```   
 
 For more detail on the implemented clean architecture read [this article](https://medium.com/flutter-community/clean-architecture-with-states-rebuilder-has-never-been-cleaner-6c9b91c3b9b6#a588)
+
+
+>For this kind of architectures, you have to start codding from the domain because it is totally independent from other layers. Then, go up and code the service layer and the data_source and the infrastructure. The UI layer is the last layer to code.
+
+>Even if you want to understand an app scaffold around this kind of architecture, start understanding the domain then the service, that the data_source and infrastructure and end by understanding the UI part.
 
 # Domain
 ## Entities
